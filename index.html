@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OA-SATHI | AI-Assisted Osteoarthritis Screening System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation / Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="brand-logo">
+          <svg class="knee-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="#3b82f6" fill="rgba(59, 130, 246, 0.1)"/>
+            <circle cx="12" cy="10" r="3" stroke="#2563eb" stroke-width="2" />
+          </svg>
+        </div>
+        <div class="brand-info">
+          <h1 class="brand-title">OA-SATHI</h1>
+          <p class="brand-subtitle" id="txt-app-subtitle">AI-Assisted Osteoarthritis Screening System</p>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Language Selector -->
+        <div class="control-item language-selector-wrap">
+          <svg class="icon-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          <select id="languageSelect" aria-label="Select Language">
+            <option value="en" selected>English (EN)</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+            <option value="as">অসমীয়া (Assamese)</option>
+            <option value="bn">বাংলা (Bengali)</option>
+            <option value="mr">मराठी (Marathi)</option>
+          </select>
+        </div>
+
+        <!-- Health Worker Info -->
+        <div class="worker-badge">
+          <div class="worker-avatar">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </div>
+          <div class="worker-details">
+            <span class="worker-name" id="workerName">ASHA Worker: Anita</span>
+            <span class="worker-location" id="workerLocation">
+              <svg class="icon-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span id="txt-location">Nashik District (NER Unit)</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Online / Offline Status Badge -->
+        <button id="statusToggleBtn" class="status-badge offline" title="Click to toggle Network Mode for testing">
+          <svg class="icon-wifi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="1" y1="1" x2="23" y2="23" class="offline-slash"></line>
+            <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+            <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+            <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+            <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+            <line x1="12" y1="20" x2="12.01" y2="20"></line>
+          </svg>
+          <span id="statusText">Mode: Offline</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Step Progress Bar -->
+      <div class="progress-bar-wrap" id="progressWrap">
+        <div class="step-badge active" id="step-badge-1">1. Welcome</div>
+        <div class="step-connector"></div>
+        <div class="step-badge" id="step-badge-2">2. Patient Registration</div>
+        <div class="step-connector"></div>
+        <div class="step-badge" id="step-badge-3">3. Red-Flags</div>
+        <div class="step-connector"></div>
+        <div class="step-badge" id="step-badge-4">4. Questionnaire</div>
+        <div class="step-connector"></div>
+        <div class="step-badge" id="step-badge-5">5. AI Analysis</div>
+      </div>
+
+      <!-- Screen 1: Welcome & Start Screening -->
+      <section id="screen-start" class="screen-card active">
+        <div class="hero-content">
+          <div class="hero-badge" id="txt-hero-pill">
+            <span class="pulse-dot"></span>
+            SIH PS 26004 • NER Community Healthcare
+          </div>
+          
+          <h2 class="hero-title" id="txt-hero-heading">Early Detection of Osteoarthritis (OA) Risk Markers</h2>
+          <p class="hero-desc" id="txt-hero-desc">
+            Standardized, low-resource point-of-care clinical assessment tool for frontline ASHA health workers in North Eastern Region.
+          </p>
+
+          <div class="screening-meta-panel">
+            <div class="meta-item">
+              <span class="meta-label" id="lbl-health-worker-id">Health Worker ID:</span>
+              <span class="meta-val">ASHA-NER-2026-084</span>
+            </div>
+            <div class="meta-divider"></div>
+            <div class="meta-item">
+              <span class="meta-label" id="lbl-storage-status">Offline Storage:</span>
+              <span class="meta-val meta-val-green">Ready (Local SQLite/IndexedDB)</span>
+            </div>
+            <div class="meta-divider"></div>
+            <div class="meta-item">
+              <span class="meta-label" id="lbl-screening-version">Protocol:</span>
+              <span class="meta-val">WOMAC + NER Clinical AI v1.0</span>
+            </div>
+          </div>
+
+          <!-- Primary Start Button -->
+          <div class="action-wrap">
+            <button id="btnStartScreening" class="btn-primary-start">
+              <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              <span id="txt-btn-start">Start Screening</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 2: Patient Registration & Consent -->
+      <section id="screen-registration" class="screen-card hidden">
+        <div class="screen-header">
+          <div class="screen-title-wrap">
+            <span class="step-tag" id="txt-reg-step">Step 2 of 5</span>
+            <h2 class="section-title" id="txt-reg-title">Patient Registration & Consent</h2>
+            <p class="section-subtitle" id="txt-reg-subtitle">Capture essential demographic details and screening consent.</p>
+          </div>
+        </div>
+
+        <form id="patientRegistrationForm" class="patient-form" onsubmit="return false;">
+          <div class="form-grid">
+            <!-- 1. Patient ID -->
+            <div class="form-group">
+              <label for="patientId" id="lbl-patient-id">
+                Patient ID <span class="req">*</span>
+              </label>
+              <div class="input-with-action">
+                <input type="text" id="patientId" name="patientId" value="OA-025" required>
+                <button type="button" id="btnGenPatientId" class="btn-secondary-sm" title="Generate New ID">Auto ID</button>
+              </div>
+            </div>
+
+            <!-- 2. Name or initials -->
+            <div class="form-group">
+              <label for="patientName" id="lbl-patient-name">
+                Name or Initials <span class="req">*</span>
+              </label>
+              <input type="text" id="patientName" name="patientName" placeholder="e.g. Ramesh K. / R.K." required>
+            </div>
+
+            <!-- 3. Age -->
+            <div class="form-group">
+              <label for="patientAge" id="lbl-patient-age">
+                Age (years) <span class="req">*</span>
+              </label>
+              <input type="number" id="patientAge" name="patientAge" min="1" max="120" placeholder="e.g. 52" required>
+            </div>
+
+            <!-- 4. Sex -->
+            <div class="form-group">
+              <label for="patientSex" id="lbl-patient-sex">
+                Sex / Gender <span class="req">*</span>
+              </label>
+              <select id="patientSex" name="patientSex" required>
+                <option value="" disabled selected>Select Sex</option>
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <!-- 5. Location -->
+            <div class="form-group full-width">
+              <label for="patientLocation" id="lbl-patient-loc">
+                Location / Village / Block <span class="req">*</span>
+              </label>
+              <input type="text" id="patientLocation" name="patientLocation" placeholder="e.g. Nashik (Rural) / Trimbak / Sinnar" value="Nashik (Rural)" required>
+            </div>
+
+            <!-- 7. Optional ABHA ID -->
+            <div class="form-group full-width">
+              <label for="abhaId" id="lbl-abha-id">
+                ABHA ID <span class="optional-tag">(Optional - Ayushman Bharat Digital Mission)</span>
+              </label>
+              <input type="text" id="abhaId" name="abhaId" placeholder="e.g. 14-digit ABHA number: 12-3456-7890-1234">
+            </div>
+
+            <!-- 6. Consent Confirmation -->
+            <div class="form-group full-width consent-card">
+              <label class="checkbox-label" for="consentCheck">
+                <input type="checkbox" id="consentCheck" name="consentCheck" required>
+                <span class="custom-checkbox"></span>
+                <span class="consent-text" id="txt-consent-statement">
+                  <strong>Patient Consent:</strong> I confirm that the patient (or caregiver) has been informed about the non-invasive osteoarthritis screening and has provided consent to record clinical risk indicators.
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" id="btnBackToStart" class="btn-secondary">
+              ← <span id="txt-btn-back">Back</span>
+            </button>
+            <button type="submit" id="btnProceedToNext" class="btn-primary">
+              <span id="txt-btn-next">Save & Proceed to Red-Flags</span> →
+            </button>
+          </div>
+
+          <div id="formValidationMsg" class="validation-msg hidden"></div>
+        </form>
+      </section>
+
+      <!-- Screen 3: Red-Flag Safety Check -->
+      <section id="screen-redflags" class="screen-card hidden">
+        <div class="screen-header">
+          <div class="screen-title-wrap">
+            <span class="step-tag tag-warning" id="txt-rf-step">Step 3 of 5 • Safety Gate</span>
+            <h2 class="section-title" id="txt-rf-title">Red-Flag Safety Check</h2>
+            <p class="section-subtitle" id="txt-rf-subtitle">Screen for urgent conditions requiring immediate medical referral before proceeding to the chronic OA questionnaire.</p>
+          </div>
+        </div>
+
+        <div class="patient-context-pill">
+          <span class="context-label">Current Patient:</span>
+          <span class="context-val" id="rfPatientBadge">OA-025 • Ramesh K. (54y, M)</span>
+        </div>
+
+        <form id="redFlagsForm" class="redflags-form" onsubmit="return false;">
+          <div class="redflags-list">
+            <!-- 1. Fever -->
+            <div class="rf-card" id="rfCard-fever">
+              <div class="rf-info">
+                <span class="rf-number">1</span>
+                <div class="rf-text-group">
+                  <h4 class="rf-question" id="rf-q1">Does the patient have a fever?</h4>
+                  <p class="rf-subtext" id="rf-sub1">Body temperature &ge; 38°C (100.4°F) or systemic chills.</p>
+                </div>
+              </div>
+              <div class="rf-toggle-group">
+                <label class="toggle-option no-opt">
+                  <input type="radio" name="rf_fever" value="no" checked>
+                  <span class="toggle-btn" id="rf-no-1">No</span>
+                </label>
+                <label class="toggle-option yes-opt">
+                  <input type="radio" name="rf_fever" value="yes">
+                  <span class="toggle-btn" id="rf-yes-1">Yes</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 2 & 3. Hot or severely swollen knee -->
+            <div class="rf-card" id="rfCard-swollen">
+              <div class="rf-info">
+                <span class="rf-number">2</span>
+                <div class="rf-text-group">
+                  <h4 class="rf-question" id="rf-q2">Is the knee hot to touch or severely swollen?</h4>
+                  <p class="rf-subtext" id="rf-sub2">Acute redness, palpable warmth, or severe joint effusion.</p>
+                </div>
+              </div>
+              <div class="rf-toggle-group">
+                <label class="toggle-option no-opt">
+                  <input type="radio" name="rf_swollen" value="no" checked>
+                  <span class="toggle-btn" id="rf-no-2">No</span>
+                </label>
+                <label class="toggle-option yes-opt">
+                  <input type="radio" name="rf_swollen" value="yes">
+                  <span class="toggle-btn" id="rf-yes-2">Yes</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 4. Recent serious injury -->
+            <div class="rf-card" id="rfCard-injury">
+              <div class="rf-info">
+                <span class="rf-number">3</span>
+                <div class="rf-text-group">
+                  <h4 class="rf-question" id="rf-q3">Has there been a recent serious injury or fall?</h4>
+                  <p class="rf-subtext" id="rf-sub3">Trauma within past 2 weeks, motor accident, or audible joint pop/snap.</p>
+                </div>
+              </div>
+              <div class="rf-toggle-group">
+                <label class="toggle-option no-opt">
+                  <input type="radio" name="rf_injury" value="no" checked>
+                  <span class="toggle-btn" id="rf-no-3">No</span>
+                </label>
+                <label class="toggle-option yes-opt">
+                  <input type="radio" name="rf_injury" value="yes">
+                  <span class="toggle-btn" id="rf-yes-3">Yes</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 5. Unable to bear weight -->
+            <div class="rf-card" id="rfCard-weight">
+              <div class="rf-info">
+                <span class="rf-number">4</span>
+                <div class="rf-text-group">
+                  <h4 class="rf-question" id="rf-q4">Is the patient completely unable to bear weight / stand?</h4>
+                  <p class="rf-subtext" id="rf-sub4">Inability to take 4 steps immediately and during examination.</p>
+                </div>
+              </div>
+              <div class="rf-toggle-group">
+                <label class="toggle-option no-opt">
+                  <input type="radio" name="rf_weight" value="no" checked>
+                  <span class="toggle-btn" id="rf-no-4">No</span>
+                </label>
+                <label class="toggle-option yes-opt">
+                  <input type="radio" name="rf_weight" value="yes">
+                  <span class="toggle-btn" id="rf-yes-4">Yes</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 6. Sudden severe pain -->
+            <div class="rf-card" id="rfCard-pain">
+              <div class="rf-info">
+                <span class="rf-number">5</span>
+                <div class="rf-text-group">
+                  <h4 class="rf-question" id="rf-q5">Did severe pain start suddenly (within hours/days)?</h4>
+                  <p class="rf-subtext" id="rf-sub5">Acute rapid onset pain (distinct from gradual chronic wear-and-tear).</p>
+                </div>
+              </div>
+              <div class="rf-toggle-group">
+                <label class="toggle-option no-opt">
+                  <input type="radio" name="rf_pain" value="no" checked>
+                  <span class="toggle-btn" id="rf-no-5">No</span>
+                </label>
+                <label class="toggle-option yes-opt">
+                  <input type="radio" name="rf_pain" value="yes">
+                  <span class="toggle-btn" id="rf-yes-5">Yes</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Status Banner -->
+          <div id="rfStatusBanner" class="rf-status-banner status-safe">
+            <div class="status-icon">✓</div>
+            <div class="status-content">
+              <strong id="rf-safe-title">No Acute Red Flags Detected</strong>
+              <p id="rf-safe-desc">Patient is cleared for routine chronic Osteoarthritis (OA) questionnaire and risk scoring.</p>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" id="btnBackToRegistration" class="btn-secondary">
+              ← <span id="txt-rf-btn-back">Back to Registration</span>
+            </button>
+            <button type="button" id="btnProceedToQuestionnaire" class="btn-primary">
+              <span id="txt-rf-btn-next">Proceed to OA Questionnaire</span> →
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Screen 4: OA Clinical Questionnaire -->
+      <section id="screen-questionnaire" class="screen-card hidden">
+        <div class="screen-header">
+          <div class="screen-title-wrap">
+            <span class="step-tag" id="txt-q-step">Step 4 of 5 • Clinical Protocol</span>
+            <h2 class="section-title" id="txt-q-title">Osteoarthritis (OA) Questionnaire</h2>
+            <p class="section-subtitle" id="txt-q-subtitle">Divided into 3 standardized clinical sections: Symptoms, Joint Function, and Risk Factors.</p>
+          </div>
+        </div>
+
+        <div class="patient-context-pill">
+          <span class="context-label">Current Patient:</span>
+          <span class="context-val" id="qPatientBadge">OA-025 • Ramesh K. (54y, M)</span>
+        </div>
+
+        <form id="oaQuestionnaireForm" class="oa-q-form" onsubmit="return false;">
+          
+          <!-- SECTION 1: SYMPTOMS -->
+          <div class="q-section-card">
+            <div class="q-section-header">
+              <div class="q-sec-badge">1</div>
+              <div class="q-sec-info">
+                <h3 class="q-sec-title" id="txt-sec1-title">Section 1: Symptoms</h3>
+                <p class="q-sec-desc" id="txt-sec1-desc">Pain characteristics, duration, and joint localization.</p>
+              </div>
+            </div>
+
+            <div class="q-grid">
+              <!-- 1.1 Pain Duration -->
+              <div class="form-group">
+                <label id="lbl-q-duration">Pain Duration <span class="req">*</span></label>
+                <select id="q_pain_duration" required>
+                  <option value="none">No pain (0)</option>
+                  <option value="less_3_months">Less than 3 months</option>
+                  <option value="3_to_6_months" selected>3 to 6 months</option>
+                  <option value="more_6_months">More than 6 months (Chronic)</option>
+                </select>
+              </div>
+
+              <!-- 1.2 Knee Laterality -->
+              <div class="form-group">
+                <label id="lbl-q-laterality">Affected Knee <span class="req">*</span></label>
+                <select id="q_knee_affected" required>
+                  <option value="right">Right Knee only</option>
+                  <option value="left">Left Knee only</option>
+                  <option value="both" selected>Both Knees (Bilateral)</option>
+                </select>
+              </div>
+
+              <!-- 1.3 Morning Stiffness -->
+              <div class="form-group">
+                <label id="lbl-q-stiffness">Morning Stiffness <span class="req">*</span></label>
+                <select id="q_morning_stiffness" required>
+                  <option value="none">No morning stiffness</option>
+                  <option value="less_30_min" selected>Less than 30 mins (Typical OA)</option>
+                  <option value="more_30_min">More than 30 mins (Inflammatory/RA)</option>
+                </select>
+              </div>
+
+              <!-- 1.4 Pain Severity Scale (0 to 10) -->
+              <div class="form-group">
+                <div class="slider-label-row">
+                  <label id="lbl-q-severity">Pain Severity (0 - 10):</label>
+                  <span class="severity-badge" id="painSeverityVal">5 / 10 (Moderate)</span>
+                </div>
+                <input type="range" id="q_pain_severity" min="0" max="10" value="5" step="1" class="pain-slider">
+                <div class="slider-ticks">
+                  <span>0 (Mild/None)</span>
+                  <span>5 (Moderate)</span>
+                  <span>10 (Severe)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 2: FUNCTION & MOBILITY -->
+          <div class="q-section-card">
+            <div class="q-section-header">
+              <div class="q-sec-badge">2</div>
+              <div class="q-sec-info">
+                <h3 class="q-sec-title" id="txt-sec2-title">Section 2: Joint Function & Mobility</h3>
+                <p class="q-sec-desc" id="txt-sec2-desc">Assessment of daily physical limitations (WOMAC Functional Scale).</p>
+              </div>
+            </div>
+
+            <div class="q-grid">
+              <div class="form-group">
+                <label id="lbl-q-walking">Difficulty Walking on Flat Ground <span class="req">*</span></label>
+                <select id="q_diff_walking" required>
+                  <option value="0">None (0)</option>
+                  <option value="1">Mild (1)</option>
+                  <option value="2" selected>Moderate (2)</option>
+                  <option value="3">Severe (3)</option>
+                  <option value="4">Extreme / Unable (4)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label id="lbl-q-stairs">Difficulty Climbing Stairs / Slopes <span class="req">*</span></label>
+                <select id="q_diff_stairs" required>
+                  <option value="0">None (0)</option>
+                  <option value="1">Mild (1)</option>
+                  <option value="2">Moderate (2)</option>
+                  <option value="3" selected>Severe (3)</option>
+                  <option value="4">Extreme / Unable (4)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label id="lbl-q-squatting">Difficulty Squatting / Sitting on Floor <span class="req">*</span></label>
+                <select id="q_diff_squatting" required>
+                  <option value="0">None (0)</option>
+                  <option value="1">Mild (1)</option>
+                  <option value="2">Moderate (2)</option>
+                  <option value="3" selected>Severe (3)</option>
+                  <option value="4">Extreme / Unable (4)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label id="lbl-q-chair">Difficulty Standing Up from a Chair <span class="req">*</span></label>
+                <select id="q_diff_chair" required>
+                  <option value="0">None (0)</option>
+                  <option value="1">Mild (1)</option>
+                  <option value="2" selected>Moderate (2)</option>
+                  <option value="3">Severe (3)</option>
+                  <option value="4">Extreme / Unable (4)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 3: RISK FACTORS -->
+          <div class="q-section-card">
+            <div class="q-section-header">
+              <div class="q-sec-badge">3</div>
+              <div class="q-sec-info">
+                <h3 class="q-sec-title" id="txt-sec3-title">Section 3: Risk Factors & Lifestyle</h3>
+                <p class="q-sec-desc" id="txt-sec3-desc">Past history, occupational joint stress, and BMI category.</p>
+              </div>
+            </div>
+
+            <div class="q-grid">
+              <div class="form-group">
+                <label id="lbl-q-past-injury">Previous Knee Injury / Past Trauma <span class="req">*</span></label>
+                <select id="q_past_injury" required>
+                  <option value="no">No past injury</option>
+                  <option value="yes" selected>Yes (Past ligament/meniscus/fracture)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label id="lbl-q-occupation">Occupation Involving Kneeling / Squatting <span class="req">*</span></label>
+                <select id="q_occupation" required>
+                  <option value="high" selected>High (Farming, Tea Gardening, Construction, Daily Labor)</option>
+                  <option value="moderate">Moderate (Domestic work, standing job, retail)</option>
+                  <option value="low">Low (Desk / Sedentary job)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label id="lbl-q-bmi">BMI / Weight Category <span class="req">*</span></label>
+                <select id="q_bmi_category" required>
+                  <option value="normal">Normal weight (BMI &lt; 23)</option>
+                  <option value="overweight" selected>Overweight (BMI 23 - 27.5)</option>
+                  <option value="obese">Obese (BMI &gt; 27.5)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label id="lbl-q-treatment">Previous Treatment Taken <span class="req">*</span></label>
+                <select id="q_prev_treatment" required>
+                  <option value="none">None</option>
+                  <option value="home_remedies">Home remedies / Ayurvedic oil</option>
+                  <option value="painkillers" selected>OTC Painkillers / NSAIDs</option>
+                  <option value="physio">Physiotherapy / Exercise</option>
+                  <option value="injections">Joint injections / Specialist care</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Real-Time Score Preview Bar -->
+          <div class="score-preview-bar">
+            <div class="score-item">
+              <span class="score-label" id="lbl-clinical-score">Calculated OA Risk Index:</span>
+              <span class="score-value score-moderate" id="scoreIndicator">Moderate Risk (64/100)</span>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" id="btnBackToRedflags" class="btn-secondary">
+              ← <span id="txt-q-btn-back">Back to Red-Flags</span>
+            </button>
+            <button type="submit" id="btnSubmitQuestionnaire" class="btn-primary">
+              <span id="txt-q-btn-next">Analyze & Generate Report</span> →
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Screen 5: AI-Assisted Analysis & Report -->
+      <section id="screen-analysis" class="screen-card hidden">
+        <!-- Analyzing State Animation -->
+        <div id="analysisLoadingState" class="analysis-loading-box">
+          <div class="spinner-pulse"></div>
+          <h3 class="loading-title" id="txt-loading-title">AI-Assisted Processing in Progress...</h3>
+          <p class="loading-subtitle" id="txt-loading-subtitle">Executing multi-modal clinical risk calculation for SIH PS 26004.</p>
+          
+          <div class="pipeline-steps">
+            <div class="pipe-step" id="pipeStep1">
+              <span class="pipe-icon" id="pipeIcon1">...</span>
+              <span class="pipe-text" id="txt-pipe-1">Checking patient responses</span>
+            </div>
+            <div class="pipe-step" id="pipeStep2">
+              <span class="pipe-icon" id="pipeIcon2">...</span>
+              <span class="pipe-text" id="txt-pipe-2">Assessing functional limitation</span>
+            </div>
+            <div class="pipe-step" id="pipeStep3">
+              <span class="pipe-icon" id="pipeIcon3">...</span>
+              <span class="pipe-text" id="txt-pipe-3">Evaluating risk factors</span>
+            </div>
+            <div class="pipe-step" id="pipeStep4">
+              <span class="pipe-icon" id="pipeIcon4">...</span>
+              <span class="pipe-text" id="txt-pipe-4">Checking X-ray availability</span>
+            </div>
+            <div class="pipe-step" id="pipeStep5">
+              <span class="pipe-icon" id="pipeIcon5">...</span>
+              <span class="pipe-text" id="txt-pipe-5">Generating referral suggestion</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analysis Results & Report View -->
+        <div id="analysisResultView" class="analysis-result-view hidden">
+          <div class="screen-header report-header">
+            <div class="screen-title-wrap">
+              <span class="step-tag tag-success" id="txt-report-tag">AI Clinical Report Ready</span>
+              <h2 class="section-title" id="txt-report-title">Screening Result & Referral Recommendation</h2>
+              <p class="section-subtitle" id="txt-report-subtitle">Standardized clinical summary generated for ASHA frontline health records.</p>
+            </div>
+            <div class="report-meta-box">
+              <span class="report-id" id="repPatientId">OA-025</span>
+              <span class="report-date" id="repDate">29 Sep 2026</span>
+            </div>
+          </div>
+
+          <!-- Patient Demographics Banner -->
+          <div class="demographics-card">
+            <div class="demo-item">
+              <span class="demo-label">Patient Name:</span>
+              <strong id="repPatientName">Ramesh K.</strong>
+            </div>
+            <div class="demo-item">
+              <span class="demo-label">Age & Sex:</span>
+              <strong id="repAgeSex">54 yrs • Male</strong>
+            </div>
+            <div class="demo-item">
+              <span class="demo-label">Location:</span>
+              <strong id="repLocation">Nashik (Rural)</strong>
+            </div>
+            <div class="demo-item">
+              <span class="demo-label">ABHA ID:</span>
+              <strong id="repAbha">12-3456-7890-1234</strong>
+            </div>
+          </div>
+
+          <!-- Main Risk Result Card -->
+          <div class="result-highlight-card tier-high" id="resultCardTier">
+            <div class="result-tier-header">
+              <div class="tier-info">
+                <span class="tier-label" id="txt-prelim-label">Preliminary Risk</span>
+                <h3 class="tier-title" id="repRiskTitle">HIGH</h3>
+              </div>
+              <div class="risk-meta-badges">
+                <div class="score-pill" id="repScoreBadge">
+                  <span class="score-pill-label" id="lbl-score-pill">Risk Score:</span>
+                  <strong id="repScoreVal">8/12</strong>
+                </div>
+                <div class="confidence-pill" id="repConfidenceBadge">
+                  <span class="conf-dot"></span>
+                  <span id="txt-conf-label">Confidence:</span>
+                  <strong id="repConfidenceVal">Moderate</strong>
+                </div>
+              </div>
+            </div>
+            <p class="tier-summary" id="repTierSummary">
+              Patient exhibits high clinical risk indicators for progressing Osteoarthritis (OA) requiring prioritized orthopaedic evaluation.
+            </p>
+          </div>
+
+          <!-- Main Contributing Factors Card -->
+          <div class="reasons-card">
+            <h4 class="reasons-heading" id="txt-reasons-title">
+              <svg class="icon-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+              </svg>
+              <span id="txt-factors-heading">Main Contributing Factors:</span>
+            </h4>
+            <ul class="reasons-list" id="repReasonsList">
+              <li>Knee pain for more than 3 months</li>
+              <li>Difficulty climbing stairs</li>
+              <li>Walking limitation</li>
+              <li>Previous knee injury</li>
+            </ul>
+          </div>
+
+          <!-- Referral Recommendation Card (USP Core) -->
+          <div class="referral-card" id="referralCard">
+            <div class="referral-header">
+              <svg class="icon-referral" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+              <div class="referral-header-text">
+                <span class="referral-badge-usp" id="txt-usp-badge">ASHA Point-of-Care Protocol</span>
+                <h4 class="referral-title" id="txt-referral-title">Referral Recommendation</h4>
+              </div>
+            </div>
+
+            <div class="referral-grid" id="repReferralGrid">
+              <!-- Block 1: Recommended Action -->
+              <div class="ref-block ref-block-action">
+                <span class="ref-label" id="lbl-rec-action">Recommended action:</span>
+                <div class="ref-val-highlight" id="repRecAction">
+                  Physiotherapy or orthopaedic
+                </div>
+              </div>
+
+              <!-- Block 2: Possible Next Referral -->
+              <div class="ref-block ref-block-next">
+                <span class="ref-label" id="lbl-next-ref">Possible next referral:</span>
+                <div class="ref-val" id="repNextReferral">
+                  Physiotherapy or orthopaedic consultation
+                </div>
+              </div>
+
+              <!-- Block 3: Reason -->
+              <div class="ref-block ref-block-reason">
+                <span class="ref-label" id="lbl-ref-reason">Reason:</span>
+                <div class="ref-val-reason" id="repRefReason">
+                  Persistent pain with functional limitation
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Report Actions -->
+          <div class="form-actions report-actions">
+            <button type="button" id="btnBackToQuestionnaire" class="btn-secondary">
+              ← <span id="txt-rep-btn-back">Back to Questionnaire</span>
+            </button>
+            <div class="action-btn-group">
+              <button type="button" id="btnPrintReport" class="btn-secondary">
+                🖨️ <span id="txt-btn-print">Print / Save PDF</span>
+              </button>
+              <button type="button" id="btnNewScreening" class="btn-primary">
+                + <span id="txt-btn-new-screening">Start New Screening</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer Status -->
+    <footer class="app-footer">
+      <div class="footer-left">
+        <span>© 2026 OA-SATHI • Developed for SIH PS 26004</span>
+      </div>
+      <div class="footer-right">
+        <span class="sync-indicator">● Local Cache Synced</span>
+      </div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

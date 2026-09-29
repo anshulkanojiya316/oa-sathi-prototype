@@ -1,0 +1,10 @@
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Scratch & temporary artifacts
+scratch/
+*.log
+*.zip
